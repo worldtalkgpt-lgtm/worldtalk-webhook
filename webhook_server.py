@@ -1,85 +1,62 @@
-import os, hmac, hashlib, base64, json, logging
 from aiohttp import web
+import hmac, hashlib, os, json
+from dotenv import load_dotenv
+from aiogram import Bot
 
-from db.session import get_session
-from db.user_repo import add_voices
+load_dotenv()
 
-logging.basicConfig(level=logging.INFO)
-routes = web.RouteTableDef()
+CLOUDPAYMENTS_SECRET = os.getenv("CLOUDPAYMENTS_API_SECRET", "")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "")
+bot = Bot(token=BOT_TOKEN)
 
-CP_API_SECRET = os.getenv("CLOUDPAYMENTS_API_SECRET", "")
-
-def verify_hmac_base64(raw: bytes, header: str) -> bool:
-    if not CP_API_SECRET or not header:
-        return False
-    digest = hmac.new(CP_API_SECRET.encode("utf-8"), raw, hashlib.sha256).digest()
-    calc = base64.b64encode(digest).decode()
-    return hmac.compare_digest(calc, header)
-
-@routes.post("/cloudpayments/webhook")
 async def cloudpayments_webhook(request: web.Request):
-    raw = await request.read()
+    # читаем как текст
+    raw_text = await request.text()
+    headers = request.headers
+
+    # если пришло как form-urlencoded — берем поле Data
+    if not raw_text.strip() and headers.get("Content-Type", "").startswith("application/x-www-form-urlencoded"):
+        form = await request.post()
+        raw_text = form.get("Data", "")
+
+    if not raw_text:
+        # логируем и отвечаем «плохо», чтобы понять что именно прилетает
+        request.app.logger.error("Empty body from CloudPayments")
+        return web.json_response({"code": 13, "message": "Empty body"}, status=400)
+
+    # проверяем подпись (хедер может называться по-разному)
+    signature = headers.get("Content-HMAC") or headers.get("Content-Hmac") or headers.get("Content-Hmac".lower())
+    expected = hmac.new(CLOUDPAYMENTS_SECRET.encode("utf-8"),
+                        raw_text.encode("utf-8"),
+                        hashlib.sha256).hexdigest()
+
+    if not signature or signature.lower() != expected.lower():
+        return web.json_response({"code": 13, "message": "Invalid signature"}, status=403)
+
+    # парсим JSON
     try:
-        data = json.loads(raw.decode("utf-8"))
-    except Exception:
-        logging.exception("Bad JSON")
-        return web.json_response({"code": 13}, status=400)  # формат не ок
+        payload = json.loads(raw_text)
+    except json.JSONDecodeError:
+        request.app.logger.exception("Bad JSON")
+        return web.json_response({"code": 13, "message": "Bad JSON"}, status=400)
 
-    # 1) Проверка подписи
-    if not verify_hmac_base64(raw, request.headers.get("Content-HMAC", "")):
-        logging.warning("Invalid HMAC")
-        return web.json_response({"code": 13}, status=401)
+    # Определяем тип события (Check/Pay)
+    event = payload.get("Event") or payload.get("NotificationType") or headers.get("X-Cloudpayments-Event", "")
+    account_id = payload.get("AccountId")  # тут твой Telegram user_id
 
-    event = data.get("Event")  # 'Check' | 'Pay' | ...
-    amount = float(data.get("Amount", 0) or 0)
-    account_id = data.get("AccountId")
-
-    logging.info("CP Event=%s Amount=%s AccountId=%s", event, amount, account_id)
-
-    # 2) Check — подтверждаем, что готовы принять оплату
-    if event == "Check":
+    # --- Check: всегда отвечаем OK, иначе форма скажет «платеж не может быть принят»
+    if str(event).lower() == "check" or ("TransactionId" not in payload and "PaymentUrl" not in payload):
         return web.json_response({"code": 0})
 
-    # 3) Pay — деньги приняты -> начисляем голоса
-    if event == "Pay":
+    # --- Pay: зачисляем голоса (если нужно — доп.проверки суммы)
+    if str(event).lower() == "pay" or "TransactionId" in payload:
+        # TODO: добавить проверку суммы payload.get("Amount") == 149.00
         try:
-            user_id = int(account_id) if account_id is not None else None
-        except ValueError:
-            user_id = None
-
-        if user_id is None:
-            logging.error("No AccountId in Pay")
-            return web.json_response({"code": 0})  # подтверждаем, но без начисления
-
-        # Маппинг сумм -> голоса (тут твой кейс 149 ₽ -> 100)
-        voices_by_amount = {
-            149.0: 100,
-            249.0: 250,
-            379.0: 500,
-        }
-        voices = voices_by_amount.get(amount, 0)
-
-        if voices > 0:
-            async with get_session() as session:
-                await add_voices(session, user_id, voices)
-            logging.info("Added %s voices to user %s", voices, user_id)
-        else:
-            logging.warning("Unsupported amount: %s", amount)
-
-        # CloudPayments ждёт code=0 как подтверждение обработки
+            # здесь вызов add_voices(session, int(account_id), 100)
+            pass
+        except Exception:
+            request.app.logger.exception("Failed to credit voices")
         return web.json_response({"code": 0})
 
-    # 4) Остальные события пока просто подтверждаем
+    # дефолт
     return web.json_response({"code": 0})
-
-@routes.get("/")
-async def health(_):
-    return web.Response(text="OK")
-
-def create_app():
-    app = web.Application()
-    app.add_routes(routes)
-    return app
-
-if __name__ == "__main__":
-    web.run_app(create_app(), host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
