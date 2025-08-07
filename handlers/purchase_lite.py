@@ -1,6 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound
+from urllib.parse import urlencode
 
 def setup(dp: Dispatcher):
     @dp.callback_query_handler(lambda c: c.data == "lite_payment")
@@ -16,8 +17,13 @@ async def send_lite_payment_screen(message: types.Message, user_id: int):
         "<b>Стоимость: 149₽</b>"
     )
 
-    # Добавляем user_id в платежную ссылку (AccountId=...)
-    payment_url = f"https://c.cloudpayments.ru/payments/578864fc4bb04b65baf266cdae862fa7?AccountId={user_id}"
+    base = "https://c.cloudpayments.ru/payments/578864fc4bb04b65baf266cdae862fa7"
+    qs = urlencode({
+        "accountId": str(user_id),  # 👈 важно: именно accountId
+        "tariff": "Lite",           # не обязат., просто метка
+        "voices": 100               # не обязат., у нас маппинг по сумме
+    })
+    payment_url = f"{base}?{qs}"
 
     keyboard = types.InlineKeyboardMarkup()
     keyboard.add(types.InlineKeyboardButton("💳 Оплатить картой", url=payment_url))
@@ -26,5 +32,4 @@ async def send_lite_payment_screen(message: types.Message, user_id: int):
     try:
         await message.edit_text(text, reply_markup=keyboard, parse_mode="HTML")
     except (MessageNotModified, MessageToEditNotFound):
-        # Если сообщение нельзя изменить (например, уже было изменено ранее)
         await message.answer(text, reply_markup=keyboard, parse_mode="HTML")
