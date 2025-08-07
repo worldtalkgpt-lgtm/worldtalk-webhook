@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: worldtalk-webhook
+    env: python
+    buildCommand: pip install -r requirements_render.txt
+    startCommand: python webhook_server.py
