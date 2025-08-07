@@ -1,57 +1,54 @@
-from aiohttp import web
 import hmac
-import hashlib
-import os
+import base64
 import json
-from dotenv import load_dotenv
-from aiogram import Bot
+from hashlib import sha256
+from aiohttp import web
+from user_repo import add_voices  # твоя функция из user_repo.py
+import os
 
-load_dotenv()
+CLOUDPAYMENTS_API_SECRET = os.getenv("CLOUDPAYMENTS_API_SECRET")
 
-CLOUDPAYMENTS_SECRET = os.getenv("CLOUDPAYMENTS_API_SECRET")
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-
-bot = Bot(token=BOT_TOKEN)
-
-async def handle_webhook(request):
+async def cloudpayments_webhook(request):
     try:
-        raw_body = await request.read()
-        headers = request.headers
+        data = await request.post()
+        raw_body = await request.text()
 
-        # Проверка подписи CloudPayments
-        signature = headers.get('Content-HMAC', '')
-        expected_signature = hmac.new(
-            CLOUDPAYMENTS_SECRET.encode(),
-            raw_body,
-            hashlib.sha256
-        ).hexdigest()
+        # 1️⃣ Проверка подписи
+        signature = request.headers.get("Content-HMAC", "")
+        computed_hmac = base64.b64encode(
+            hmac.new(
+                CLOUDPAYMENTS_API_SECRET.encode("utf-8"),
+                raw_body.encode("utf-8"),
+                sha256
+            ).digest()
+        ).decode("utf-8")
 
-        if not hmac.compare_digest(signature, expected_signature):
-            return web.json_response({'code': 13, 'message': 'Invalid signature'}, status=403)
+        if not hmac.compare_digest(signature, computed_hmac):
+            return web.json_response({"code": 13})  # Ошибка авторизации
 
-        payload = json.loads(raw_body.decode())
-        print("✅ PAYLOAD:", payload)
+        # 2️⃣ Обработка типов уведомлений
+        event = data.get("InvoiceId")
+        amount = float(data.get("Amount", 0))
+        user_id = int(data.get("AccountId", 0))
+        notification_type = request.path.split("/")[-1]
 
-        # Обработка платежа
-        if payload.get("Status") == "Completed":
-            amount = float(payload.get("Amount", 0))
-            user_id = payload.get("AccountId")  # Это chat_id из ссылки
+        # На "Check" просто подтверждаем
+        if data.get("Status") is None and request.method == "POST":
+            return web.json_response({"code": 0})
 
-            if user_id:
-                await bot.send_message(
-                    chat_id=user_id,
-                    text=f"💳 Платеж на {amount} руб. успешно зачислен! Спасибо!"
-                )
-                print(f"✅ Уведомление отправлено пользователю {user_id}")
+        # На Pay — начисляем голоса
+        if amount == 149:
+            await add_voices(user_id, 100)
+            return web.json_response({"code": 0})
 
-        return web.json_response({'code': 0})
+        return web.json_response({"code": 0})
 
     except Exception as e:
-        print("❌ Ошибка:", e)
-        return web.json_response({'code': 500, 'message': str(e)}, status=500)
+        print(f"Webhook error: {e}")
+        return web.json_response({"code": 13})
 
 app = web.Application()
-app.router.add_post("/cloudpayments/webhook", handle_webhook)
+app.router.add_post("/cloudpayments/webhook", cloudpayments_webhook)
 
-if __name__ == '__main__':
-    web.run_app(app, port=10000)
+if __name__ == "__main__":
+    web.run_app(app, port=5000)
