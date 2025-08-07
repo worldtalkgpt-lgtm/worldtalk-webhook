@@ -1,7 +1,10 @@
+import os
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils.exceptions import MessageNotModified, MessageToEditNotFound
-from urllib.parse import urlencode
+
+# Загружаем ID ссылки из переменных окружения
+LINK_ID = os.getenv("CLOUDPAYMENTS_LITE_LINK_ID")
 
 def setup(dp: Dispatcher):
     @dp.callback_query_handler(lambda c: c.data == "lite_payment")
@@ -17,13 +20,8 @@ async def send_lite_payment_screen(message: types.Message, user_id: int):
         "<b>Стоимость: 149₽</b>"
     )
 
-    base = "https://c.cloudpayments.ru/payments/578864fc4bb04b65baf266cdae862fa7"
-    qs = urlencode({
-        "accountId": str(user_id),  # 👈 важно: именно accountId
-        "tariff": "Lite",           # не обязат., просто метка
-        "voices": 100               # не обязат., у нас маппинг по сумме
-    })
-    payment_url = f"{base}?{qs}"
+    # Ссылка CloudPayments с привязкой к конкретному пользователю
+    payment_url = f"https://c.cloudpayments.ru/payments/{LINK_ID}?AccountId={user_id}"
 
     keyboard = types.InlineKeyboardMarkup()
     keyboard.add(types.InlineKeyboardButton("💳 Оплатить картой", url=payment_url))
