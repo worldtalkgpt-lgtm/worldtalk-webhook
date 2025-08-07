@@ -1,0 +1,163 @@
+2025-07-18 03:57:01,011 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 03:57:01,064 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 03:57:01,077 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 03:57:01,078 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/beast/faiss_index_beast.index
+2025-07-18 03:57:01,117 [INFO] 📄 Загружаем mapping: /root/worldtalk/beast/beast_mapping.json
+2025-07-18 03:57:01,129 [INFO] ✅ Загружено 1587 элементов из mapping
+2025-07-18 03:57:01,857 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 03:57:01,885 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 03:57:01,897 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 03:57:02,015 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/beast/faiss_index_beast.index
+2025-07-18 03:57:02,040 [INFO] 📄 Загружаем mapping: /root/worldtalk/beast/beast_mapping.json
+2025-07-18 03:57:02,052 [INFO] ✅ Загружено 1587 элементов из mapping
+2025-07-18 03:57:02,317 [INFO] Bot: WorldTalkBot [@WorldTalkBot]
+2025-07-18 03:57:02,346 [WARNING] Updates were skipped successfully.
+2025-07-18 03:57:02,346 [INFO] Start polling.
+2025-07-18 03:57:45,730 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 03:57:45,831 [INFO] [FAISS] topic=детство → найдено 10 кандидатов
+2025-07-18 03:57:45,831 [INFO] [707603442] FAISS вернул 10 кандидатов для topic=Детство
+2025-07-18 03:58:18,349 [INFO] Stop polling...
+2025-07-18 03:58:18,351 [WARNING] Goodbye!
+2025-07-18 04:09:27,566 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 04:09:27,622 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 04:09:27,636 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 04:09:28,373 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 04:09:28,403 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 04:09:28,415 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 04:09:28,525 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/beast/faiss_index_beast.index
+2025-07-18 04:09:28,562 [INFO] 📄 Загружаем mapping: /root/worldtalk/beast/beast_mapping.json
+2025-07-18 04:09:28,572 [INFO] ✅ Загружено 1587 элементов из mapping
+2025-07-18 04:09:28,790 [INFO] Bot: WorldTalkBot [@WorldTalkBot]
+2025-07-18 04:09:28,818 [WARNING] Updates were skipped successfully.
+2025-07-18 04:09:28,818 [INFO] Start polling.
+2025-07-18 04:10:13,331 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 04:10:13,350 [INFO] [FAISS] topic=путь на youtube → найдено 10 кандидатов
+2025-07-18 04:10:13,351 [INFO] [707603442] FAISS вернул 10 кандидатов для topic=Путь на YouTube
+2025-07-18 04:13:28,255 [INFO] Stop polling...
+2025-07-18 04:13:28,256 [WARNING] Goodbye!
+2025-07-18 05:41:46,345 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 05:41:46,403 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 05:41:46,418 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 05:41:47,151 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 05:41:47,183 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 05:41:47,196 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 05:41:47,313 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/beast/faiss_index_beast.index
+2025-07-18 05:41:47,355 [INFO] 📄 Загружаем mapping: /root/worldtalk/beast/beast_mapping.json
+2025-07-18 05:41:47,367 [INFO] ✅ Загружено 1587 элементов из mapping
+2025-07-18 05:41:47,588 [INFO] Bot: WorldTalkBot [@WorldTalkBot]
+2025-07-18 05:41:47,609 [WARNING] Updates were skipped successfully.
+2025-07-18 05:41:47,609 [INFO] Start polling.
+2025-07-18 05:42:53,246 [INFO] Stop polling...
+2025-07-18 05:42:53,246 [WARNING] Goodbye!
+2025-07-18 05:48:16,517 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 05:48:16,567 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 05:48:16,580 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 05:48:17,336 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 05:48:17,392 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 05:48:17,406 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 05:48:17,520 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/beast/faiss_index_beast.index
+2025-07-18 05:48:17,561 [INFO] 📄 Загружаем mapping: /root/worldtalk/beast/beast_mapping.json
+2025-07-18 05:48:17,574 [INFO] ✅ Загружено 1587 элементов из mapping
+2025-07-18 05:48:17,816 [INFO] Bot: WorldTalkBot [@WorldTalkBot]
+2025-07-18 05:48:17,837 [WARNING] Updates were skipped successfully.
+2025-07-18 05:48:17,838 [INFO] Start polling.
+2025-07-18 05:49:36,549 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 05:49:36,652 [INFO] [FAISS] topic=дружба в моей жизни → найдено 10 кандидатов
+2025-07-18 05:49:36,653 [INFO] [6646638778] FAISS вернул 10 кандидатов для topic=Дружба в моей жизни
+2025-07-18 05:50:06,927 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 05:50:06,939 [INFO] [FAISS] topic=дружба в моей жизни → найдено 10 кандидатов
+2025-07-18 05:50:06,939 [INFO] [6646638778] FAISS вернул 10 кандидатов для topic=Дружба в моей жизни
+2025-07-18 05:50:15,283 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 05:50:15,293 [INFO] [FAISS] topic=дружба в моей жизни → найдено 10 кандидатов
+2025-07-18 05:50:15,293 [INFO] [6646638778] FAISS вернул 10 кандидатов для topic=Дружба в моей жизни
+2025-07-18 05:50:24,050 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 05:50:24,154 [INFO] [FAISS] topic=дружба в моей жизни → найдено 10 кандидатов
+2025-07-18 05:50:24,154 [INFO] [6646638778] FAISS вернул 10 кандидатов для topic=Дружба в моей жизни
+2025-07-18 05:53:40,073 [INFO] Stop polling...
+2025-07-18 05:53:40,074 [WARNING] Goodbye!
+2025-07-18 05:54:13,101 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 05:54:13,155 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 05:54:13,168 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 05:54:13,918 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 05:54:13,965 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 05:54:13,979 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 05:54:14,108 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/beast/faiss_index_beast.index
+2025-07-18 05:54:14,149 [INFO] 📄 Загружаем mapping: /root/worldtalk/beast/beast_mapping.json
+2025-07-18 05:54:14,161 [INFO] ✅ Загружено 1587 элементов из mapping
+2025-07-18 05:54:14,409 [INFO] Bot: WorldTalkBot [@WorldTalkBot]
+2025-07-18 05:54:14,432 [WARNING] Updates were skipped successfully.
+2025-07-18 05:54:14,433 [INFO] Start polling.
+2025-07-18 05:54:35,558 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 05:54:35,578 [INFO] [FAISS] topic=барселона → найдено 10 кандидатов
+2025-07-18 05:54:35,578 [INFO] [707603442] FAISS вернул 10 кандидатов для topic=Барселона
+2025-07-18 05:55:22,510 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 05:55:22,605 [INFO] [FAISS] topic=дружба в моей жизни → найдено 10 кандидатов
+2025-07-18 05:55:22,605 [INFO] [707603442] FAISS вернул 10 кандидатов для topic=Дружба в моей жизни
+2025-07-18 05:55:37,324 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 05:55:37,422 [INFO] [FAISS] topic=деньги бизнес и влияние → найдено 10 кандидатов
+2025-07-18 05:55:37,422 [INFO] [707603442] FAISS вернул 10 кандидатов для topic=Деньги бизнес и влияние
+2025-07-18 05:56:17,853 [INFO] Stop polling...
+2025-07-18 05:56:17,854 [WARNING] Goodbye!
+2025-07-18 06:04:49,158 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 06:04:49,211 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 06:04:49,225 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 06:04:50,102 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 06:04:50,142 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 06:04:50,159 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 06:07:24,482 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 06:07:24,541 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 06:07:24,557 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 06:07:25,586 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 06:07:25,626 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 06:07:25,640 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 06:07:25,774 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/beast/faiss_index_beast.index
+2025-07-18 06:07:25,820 [INFO] 📄 Загружаем mapping: /root/worldtalk/beast/beast_mapping.json
+2025-07-18 06:07:25,837 [INFO] ✅ Загружено 1587 элементов из mapping
+2025-07-18 06:07:26,136 [INFO] Bot: WorldTalkBot [@WorldTalkBot]
+2025-07-18 06:07:26,171 [WARNING] Updates were skipped successfully.
+2025-07-18 06:07:26,171 [INFO] Start polling.
+2025-07-18 06:07:44,610 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 06:07:44,719 [INFO] [FAISS] topic=путь на youtube → найдено 10 кандидатов
+2025-07-18 06:07:44,719 [INFO] [707603442] FAISS вернул 10 кандидатов для topic=Путь на YouTube
+2025-07-18 06:08:17,844 [INFO] Stop polling...
+2025-07-18 06:08:17,845 [WARNING] Goodbye!
+2025-07-18 06:13:52,742 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 06:13:52,811 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 06:13:52,832 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 06:13:53,715 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 06:13:53,751 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 06:13:53,766 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 06:13:53,901 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/beast/faiss_index_beast.index
+2025-07-18 06:13:53,946 [INFO] 📄 Загружаем mapping: /root/worldtalk/beast/beast_mapping.json
+2025-07-18 06:13:53,959 [INFO] ✅ Загружено 1587 элементов из mapping
+2025-07-18 06:13:55,210 [INFO] Bot: WorldTalkBot [@WorldTalkBot]
+2025-07-18 06:13:55,240 [WARNING] Updates were skipped successfully.
+2025-07-18 06:13:55,240 [INFO] Start polling.
+2025-07-18 06:14:16,868 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 06:14:16,969 [INFO] [FAISS] topic=контент и идеи → найдено 10 кандидатов
+2025-07-18 06:14:16,970 [INFO] [707603442] FAISS вернул 10 кандидатов для topic=Контент и идеи
+2025-07-18 06:14:29,266 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 06:14:29,369 [INFO] [FAISS] topic=контент и идеи → найдено 10 кандидатов
+2025-07-18 06:14:29,369 [INFO] [707603442] FAISS вернул 10 кандидатов для topic=Контент и идеи
+2025-07-18 06:14:41,346 [INFO] Stop polling...
+2025-07-18 06:14:41,347 [WARNING] Goodbye!
+2025-07-18 06:15:14,478 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 06:15:14,543 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 06:15:14,559 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 06:15:15,375 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/messi/faiss_index_messi.index
+2025-07-18 06:15:15,420 [INFO] 📄 Загружаем mapping: /root/worldtalk/messi/messi_mapping.json
+2025-07-18 06:15:15,433 [INFO] ✅ Загружено 1937 элементов из mapping
+2025-07-18 06:15:15,558 [INFO] 🚀 Загружаем FAISS-индекс: /root/worldtalk/beast/faiss_index_beast.index
+2025-07-18 06:15:15,606 [INFO] 📄 Загружаем mapping: /root/worldtalk/beast/beast_mapping.json
+2025-07-18 06:15:15,620 [INFO] ✅ Загружено 1587 элементов из mapping
+2025-07-18 06:15:15,866 [INFO] Bot: WorldTalkBot [@WorldTalkBot]
+2025-07-18 06:15:15,888 [WARNING] Updates were skipped successfully.
+2025-07-18 06:15:15,889 [INFO] Start polling.
+2025-07-18 06:15:35,296 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 06:15:35,313 [INFO] [FAISS] topic=дружба в моей жизни → найдено 10 кандидатов
+2025-07-18 06:15:35,314 [INFO] [707603442] FAISS вернул 10 кандидатов для topic=Дружба в моей жизни
+2025-07-18 06:15:53,478 [INFO] HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-18 06:15:53,496 [INFO] [FAISS] topic=путь на youtube → найдено 10 кандидатов
+2025-07-18 06:15:53,496 [INFO] [707603442] FAISS вернул 10 кандидатов для topic=Путь на YouTube
+2025-07-18 06:17:08,554 [INFO] Stop polling...
+2025-07-18 06:17:08,555 [WARNING] Goodbye!
