@@ -1,53 +1,57 @@
-# webhook_server.py
-
 from aiohttp import web
-import os, hmac, hashlib, json
-from db.session import get_session
-from db.user_repo import add_voices
+import hmac
+import hashlib
+import os
+import json
 from dotenv import load_dotenv
+from aiogram import Bot
 
 load_dotenv()
+
 CLOUDPAYMENTS_SECRET = os.getenv("CLOUDPAYMENTS_API_SECRET")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-routes = web.RouteTableDef()
+bot = Bot(token=BOT_TOKEN)
 
-@routes.post("/cloudpayments/webhook")
 async def handle_webhook(request):
     try:
-        raw_data = await request.read()
-        data = json.loads(raw_data)
+        raw_body = await request.read()
+        headers = request.headers
 
-        # Подпись запроса
-        signature = request.headers.get("Content-HMAC", "")
+        # Проверка подписи CloudPayments
+        signature = headers.get('Content-HMAC', '')
         expected_signature = hmac.new(
-            key=CLOUDPAYMENTS_SECRET.encode(),
-            msg=raw_data,
-            digestmod=hashlib.sha256
+            CLOUDPAYMENTS_SECRET.encode(),
+            raw_body,
+            hashlib.sha256
         ).hexdigest()
 
-        if signature != expected_signature:
-            return web.json_response({"code": 13, "message": "Invalid HMAC"}, status=403)
+        if not hmac.compare_digest(signature, expected_signature):
+            return web.json_response({'code': 13, 'message': 'Invalid signature'}, status=403)
 
-        user_id = int(data.get("AccountId"))
-        amount = float(data.get("Amount", 0))
+        payload = json.loads(raw_body.decode())
+        print("✅ PAYLOAD:", payload)
 
-        # Сопоставление суммы -> количество голосов
-        voices_map = {10: 10, 149: 100, 249: 250, 379: 500}
-        voices = voices_map.get(int(amount), 0)
+        # Обработка платежа
+        if payload.get("Status") == "Completed":
+            amount = float(payload.get("Amount", 0))
+            user_id = payload.get("AccountId")  # Это chat_id из ссылки
 
-        if voices == 0:
-            return web.json_response({"code": 0, "message": "Unsupported amount"})
+            if user_id:
+                await bot.send_message(
+                    chat_id=user_id,
+                    text=f"💳 Платеж на {amount} руб. успешно зачислен! Спасибо!"
+                )
+                print(f"✅ Уведомление отправлено пользователю {user_id}")
 
-        async with get_session() as session:
-            await add_voices(session, user_id, voices)
+        return web.json_response({'code': 0})
 
-        return web.json_response({"code": 0})
-    
     except Exception as e:
-        return web.json_response({"code": 99, "message": str(e)}, status=500)
+        print("❌ Ошибка:", e)
+        return web.json_response({'code': 500, 'message': str(e)}, status=500)
 
 app = web.Application()
-app.add_routes(routes)
+app.router.add_post("/cloudpayments/webhook", handle_webhook)
 
-if __name__ == "__main__":
-    web.run_app(app, port=int(os.getenv("PORT", 8000)))
+if __name__ == '__main__':
+    web.run_app(app, port=10000)
