@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 # ✅ твоя функция начисления голосов
 # ПОПРАВЬ путь, если user_repo лежит в другом модуле
-from services.user_repo import add_voices
+from db.user_repo import add_voices
 
 load_dotenv()
 
