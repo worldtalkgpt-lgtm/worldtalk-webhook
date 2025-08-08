@@ -79,6 +79,6 @@ def create_app():
     app.router.add_post("/cloudpayments/webhook", cloudpayments_webhook)
     return app
 
-if name == "__main__":
+if __name__ == "__main__":
     app = create_app()
     web.run_app(app, host="0.0.0.0", port=int(os.getenv("PORT", "10000")))
