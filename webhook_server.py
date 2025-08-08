@@ -1,114 +1,157 @@
+import os
+import json
+import hmac
+import hashlib
+import logging
+from decimal import Decimal
+
 from aiohttp import web
-import hmac, hashlib, os, json
 from dotenv import load_dotenv
+
+from sqlalchemy.future import select
+
+# === твои зависимости проекта ===
+from db.session import async_session  # <-- если у тебя по-другому называется, поправь
+from services.user_repo import add_voices
+from models.processed_payment import ProcessedPayment
+
+# --- опционально для уведомления в TG, если BOT_TOKEN есть
 from aiogram import Bot
 
-# 👉 добавь эти импорты
-from db import async_session            # твоя фабрика сессий
-from sqlalchemy import select
-from models.processed_payment import ProcessedPayment  # см. модель ниже
-from user_repo import add_voices
-
 load_dotenv()
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 CLOUDPAYMENTS_SECRET = os.getenv("CLOUDPAYMENTS_API_SECRET", "")
-BOT_TOKEN = os.getenv("BOT_TOKEN")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 bot = Bot(token=BOT_TOKEN) if BOT_TOKEN else None
 
-async def cloudpayments_webhook(request: web.Request):
-    raw_text = await request.text()
-    headers = request.headers
+# рубли -> голоса (фиксируем тарифы)
+VOICES_BY_AMOUNT_RUB = {
+    149: 100,  # Lite
+    # сюда потом добавишь другие тарифы: 299: 250, и т.д.
+}
 
-    # CloudPayments иногда шлёт form-urlencoded (в т.ч. в "Проверке уведомлений")
-    if (not raw_text.strip()
-        and headers.get("Content-Type","").startswith("application/x-www-form-urlencoded")):
-        form = await request.post()
-        # в этом случае тело JSON лежит в поле Data
-        raw_text = form.get("Data", "")
 
-    if not raw_text:
-        request.app.logger.error("Empty body from CloudPayments")
-        return web.json_response({"code": 13, "message": "Empty body"}, status=400)
-
-    # HMAC подпись
-    signature = headers.get("Content-HMAC") or headers.get("Content-Hmac")
-    expected = hmac.new(
+def _calc_signature(raw_text: str) -> str:
+    return hmac.new(
         CLOUDPAYMENTS_SECRET.encode("utf-8"),
         raw_text.encode("utf-8"),
         hashlib.sha256
     ).hexdigest()
+
+
+async def cloudpayments_webhook(request: web.Request) -> web.Response:
+    # 1) читаем "сырое" тело ровно так, как его подписал CloudPayments
+    raw_body = await request.read()
+    raw_text = raw_body.decode("utf-8", errors="ignore")
+    headers = request.headers
+
+    # Иногда CloudPayments присылает форму (Content-Type: application/x-www-form-urlencoded)
+    # и полезную нагрузку кладёт в поле "Data"
+    if (not raw_text.strip()
+            and headers.get("Content-Type", "").startswith("application/x-www-form-urlencoded")):
+        form = await request.post()
+        raw_text = form.get("Data", "")
+
+    if not raw_text:
+        logger.error("Empty body from CloudPayments")
+        return web.json_response({"code": 13, "message": "Empty body"}, status=400)
+
+    # 2) валидируем подпись
+    signature = headers.get("Content-HMAC") or headers.get("Content-Hmac") or ""
+    expected = _calc_signature(raw_text)
     if not signature or signature.lower() != expected.lower():
+        logger.warning("Invalid signature")
         return web.json_response({"code": 13, "message": "Invalid signature"}, status=403)
 
-    # JSON
+    # 3) парсим JSON
     try:
         payload = json.loads(raw_text)
     except json.JSONDecodeError:
-        request.app.logger.exception("Bad JSON")
+        logger.exception("Bad JSON")
         return web.json_response({"code": 13, "message": "Bad JSON"}, status=400)
 
     event = (payload.get("Event") or payload.get("NotificationType") or "").lower()
+    account_id = str(payload.get("AccountId") or "")
+    transaction_id = str(payload.get("TransactionId") or payload.get("Id") or "")
 
-    # Универсально: и в Check, и в Pay эти поля есть
-    account_id = payload.get("AccountId")
-    amount = float(payload.get("Amount", 0))
-    currency = (payload.get("Currency") or "RUB").upper()
-    tx_id = str(payload.get("TransactionId") or "")  # для идемпотентности
-    data = payload.get("Data") or {}
-    voices = int(data.get("voices", 0))              # мы кладём это в JsonData при формировании ссылки
-    tariff = data.get("tariff")
+    logger.info(f"Webhook event={event} tx={transaction_id} account={account_id}")
 
+    # 4) CloudPayments "check" — отвечаем ОК, иначе платёж не пройдёт
     if event == "check":
-        # можно сделать валидацию (например, что сумма/валюта совпадают с тарифом)
         return web.json_response({"code": 0})
 
+    # 5) Успешная оплата
     if event == "pay":
-        # 1) базовые проверки (подстрои под свой тариф)
-        if not account_id or voices <= 0:
-            return web.json_response({"code": 13, "message": "bad fields"}, status=400)
-        if currency != "RUB":
-            return web.json_response({"code": 13, "message": "bad currency"}, status=400)
+        # Берём сумму/валюту
+        try:
+            amount = Decimal(str(payload.get("Amount", "0")))
+        except Exception:
+            amount = Decimal("0")
+        currency = (payload.get("Currency") or "RUB").upper()
 
-        # Пример: тариф Lite (100 голосов за 149 ₽)
-        # Если тарифов несколько — сделай словарь допустимых сумм/голосов и сверяй.
-        if tariff == "lite":
-            if not (voices == 100 and abs(amount - 149.0) < 0.01):
-                return web.json_response({"code": 13, "message": "bad amount/voices"}, status=400)
-        # else: проверки для других тарифов…
+        # Нормализуем до целых рублей (149.00 -> 149)
+        rub_int = int(round(float(amount)))
 
-        # 2) идемпотентность по TransactionId
-        async with async_session() as s:
-            if tx_id:
-                from sqlalchemy import select
-                res = await s.execute(select(ProcessedPayment).where(ProcessedPayment.transaction_id == tx_id))
-                if res.scalar_one_or_none():
-                    return web.json_response({"code": 0})  # уже обработали
+        voices_to_add = 0
+        if currency == "RUB":
+            voices_to_add = VOICES_BY_AMOUNT_RUB.get(rub_int, 0)
 
-            # 3) начисляем голоса
-            await add_voices(s, int(account_id), voices)
+        if not account_id.isdigit():
+            # Если не смогли понять пользователя — просто подтвердим,
+            # чтобы CloudPayments не ретраил бесконечно, и залогируем
+            logger.error(f"PAY without valid AccountId: {account_id}")
+            return web.json_response({"code": 0})
 
-            # 4) помечаем транзакцию как обработанную
-            if tx_id:
-                s.add(ProcessedPayment(transaction_id=tx_id))
-            await s.commit()
+        if voices_to_add <= 0:
+            logger.warning(f"No voices mapping for amount={rub_int} {currency}")
+            return web.json_response({"code": 0})
 
-        # (опционально) уведомим пользователя в TG
-        # if bot:
-        #     try:
-        #         await bot.send_message(int(account_id), f"✅ Оплата {amount:.0f} ₽ прошла. Начислено {voices} голосов.")
-        #     except Exception:
-        #         request.app.logger.exception("Failed to notify user")
+        # 6) антидубль: один и тот же TransactionId может прийти несколько раз
+        async with async_session() as session:
+            exists = await session.get(ProcessedPayment, transaction_id) if transaction_id else None
+            if exists:
+                return web.json_response({"code": 0})
+
+            # начисляем голоса
+            await add_voices(session, int(account_id), voices_to_add)
+
+            # фиксируем обработку транзакции
+            session.add(ProcessedPayment(
+                transaction_id=transaction_id or f"noid-{account_id}-{rub_int}",
+                account_id=account_id,
+                amount=int(amount * 100),  # копейки, если нужно
+            ))
+            await session.commit()
+
+        # можно отправить уведомление в TG (по желанию)
+        if bot:
+            try:
+                await bot.send_message(
+                    int(account_id),
+                    f"✅ Оплата прошла, начислено {voices_to_add} голосов. Спасибо!"
+                )
+            except Exception:
+                pass
 
         return web.json_response({"code": 0})
 
-    # на всякий случай — ок на другие эвенты
+    # На остальные эвенты отвечаем ОК, чтобы не спамило ретраями
     return web.json_response({"code": 0})
+
+
+# простой healthcheck
+async def health(_):
+    return web.json_response({"ok": True})
 
 
 def create_app():
     app = web.Application()
+    app.router.add_get("/health", health)
     app.router.add_post("/cloudpayments/webhook", cloudpayments_webhook)
     return app
+
 
 if __name__ == "__main__":
     app = create_app()
